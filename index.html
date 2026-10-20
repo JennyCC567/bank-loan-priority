@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bank Loan Call Priority</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Personal loan campaign</p>
+      <h1>Bank Loan Call Priority</h1>
+    </div>
+    <div class="model-badge">
+      <span class="badge-label">Recommended model</span>
+      <span class="badge-value">Neural network</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary-grid" aria-label="Campaign summary">
+      <article class="metric">
+        <span class="metric-label">Test AUC</span>
+        <strong id="aucMetric">0.993</strong>
+        <span class="metric-note">ranking quality on held-out customers</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">Accepted in top 100</span>
+        <strong id="topAcceptedMetric">--</strong>
+        <span class="metric-note">expected wins from the call list</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">Random baseline</span>
+        <strong id="randomMetric">--</strong>
+        <span class="metric-note">accepted if calls were random</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">Lift vs. random</span>
+        <strong id="liftMetric">--</strong>
+        <span class="metric-note">more efficient use of 100 calls</span>
+      </article>
+    </section>
+
+    <section class="toolbar" aria-label="Customer list controls">
+      <div class="control-group">
+        <label for="searchBox">Search customer ID</label>
+        <input id="searchBox" type="search" placeholder="e.g. 2374">
+      </div>
+      <div class="control-group">
+        <label for="segmentFilter">Segment</label>
+        <select id="segmentFilter">
+          <option value="all">All customers</option>
+          <option value="top100">Top 100 call list</option>
+          <option value="accepted">Accepted in test data</option>
+          <option value="high">Probability at least 50%</option>
+        </select>
+      </div>
+      <button id="downloadBtn" type="button">Download call list</button>
+    </section>
+
+    <section class="workspace">
+      <article class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Ranked Customers</h2>
+            <p id="tableCaption">Sorted by predicted loan acceptance probability.</p>
+          </div>
+          <span id="rowCount" class="pill">Loading</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>ID</th>
+                <th>Probability</th>
+                <th>Accepted</th>
+                <th>Income</th>
+                <th>Education</th>
+                <th>CCAvg</th>
+                <th>Family</th>
+              </tr>
+            </thead>
+            <tbody id="customerRows"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <aside class="panel form-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Single Customer</h2>
+            <p>Estimate one customer's probability using the exported network.</p>
+          </div>
+        </div>
+        <form id="predictForm">
+          <div class="form-grid">
+            <label>Age <input name="Age" type="number" min="18" max="100" step="1" value="45" required></label>
+            <label>Income <input name="Income" type="number" min="0" step="1" value="120" required></label>
+            <label>Family <input name="Family" type="number" min="1" max="10" step="1" value="3" required></label>
+            <label>CCAvg <input name="CCAvg" type="number" min="0" step="0.1" value="3.2" required></label>
+            <label>Education
+              <select name="Education">
+                <option value="1">1 Undergrad</option>
+                <option value="2" selected>2 Graduate</option>
+                <option value="3">3 Advanced</option>
+              </select>
+            </label>
+            <label>Mortgage <input name="Mortgage" type="number" min="0" step="1" value="0" required></label>
+            <label>Securities
+              <select name="Securities Account">
+                <option value="0" selected>No</option>
+                <option value="1">Yes</option>
+              </select>
+            </label>
+            <label>CD Account
+              <select name="CD Account">
+                <option value="0" selected>No</option>
+                <option value="1">Yes</option>
+              </select>
+            </label>
+            <label>Online
+              <select name="Online">
+                <option value="0">No</option>
+                <option value="1" selected>Yes</option>
+              </select>
+            </label>
+            <label>Credit Card
+              <select name="CreditCard">
+                <option value="0" selected>No</option>
+                <option value="1">Yes</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Predict probability</button>
+        </form>
+        <div class="prediction-result" aria-live="polite">
+          <span>Predicted probability</span>
+          <strong id="manualProbability">--</strong>
+          <p id="manualAdvice">Enter customer details and run the model.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel check-panel">
+      <div>
+        <h2>Browser Consistency Check</h2>
+        <p>The page recomputes all 1,000 neural-network probabilities from <code>model_nn.json</code> and compares them with <code>p_nn_reference</code>.</p>
+      </div>
+      <div id="checkStatus" class="check-status pending">Loading model files</div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
